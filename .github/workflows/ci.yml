@@ -1,0 +1,42 @@
+name: Calculator CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Make ci.sh executable
+        run: chmod +x ci.sh
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies (optional)
+        run: |
+          pip install -r requirements.txt || echo "requirements.txt отсутствует, пропуск..."
+
+      - name: Run CI script
+        run: ./ci.sh
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator-build
+          path: dist/
+
+      - name: Upload install folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator-install
+          path: install/
